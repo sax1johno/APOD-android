@@ -2,6 +2,9 @@ package com.johnwoconnor.experiments.apod;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,7 +16,7 @@ public class DetailActivity extends Activity {
 
     TextView mDetailName;
     TextView mDetailDescription;
-
+    Handler mHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,8 +28,6 @@ public class DetailActivity extends Activity {
         Intent i = getIntent();
         mDetailName.setText(i.getStringExtra("Title"));
         mDetailDescription.setText(i.getStringExtra("Explanation"));
-
-
     }
 
 }
