@@ -15,6 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.johnwoconnor.experiments.apod.com.johnwoconnor.experiments.apod.dao.ApodDAO;
+import com.johnwoconnor.experiments.apod.com.johnwoconnor.experiments.apod.dao.CassiniDAO;
+import com.johnwoconnor.experiments.apod.com.johnwoconnor.experiments.apod.dao.HubbleDAO;
+import com.johnwoconnor.experiments.apod.models.ScienceImage;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,6 +32,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.concurrent.Executor;
 import java.util.logging.LogRecord;
 
 
@@ -37,12 +44,6 @@ public class MainActivity extends Activity {
     private Button mDetailButton;
     private ImageView mApodImage;
 
-    private JSONObject apodData;
-
-    private final String APOD_URL = "https://api.data.gov/nasa/planetary/apod?api_key=RCxj0hENMHTlgdK6Q83Q0W3HH15TiJMogvHotbe9";
-    private final String JSON_URL = "url";
-    private final String JSON_EXPLANATION = "explanation";
-    private final String JSON_TITLE = "title";
     private Handler mHandler;
 
     private String mImageUrl;
@@ -83,8 +84,62 @@ public class MainActivity extends Activity {
             Log.d(TAG, Integer.toString(i));
         }
         DownloaderTask task = new DownloaderTask();
-
         task.execute("Param1", "Param2", "etc");
+
+//        DirectExecutor exec = new DirectExecutor();
+//        ThreadExecutor separateExec = new ThreadExecutor();
+//
+//        exec.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.d(TAG, "Hello, world from the direct executor");
+//            }
+//        });
+//
+//        separateExec.execute(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                // Log.d(TAG, strings[0]);
+//                try {
+//                    Log.d(TAG, "This is happening in a separateExec");
+//                    URL apod = new URL(APOD_URL);
+//                    HttpURLConnection urlConnection = (HttpURLConnection) apod.openConnection();
+//                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+//                    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+//                    String jsonContent = br.readLine();
+//                    apodData = new JSONObject(jsonContent);
+//                    mImageUrl = apodData.getString(JSON_URL);
+//                    mTitle = apodData.getString(JSON_TITLE);
+//                    mDescription = apodData.getString(JSON_EXPLANATION);
+//
+//                    Log.d(TAG, apodData.getString(JSON_URL));
+//                    Log.d(TAG, apodData.getString(JSON_TITLE));
+//                    InputStream is = (InputStream) new URL(mImageUrl).getContent();
+//                    mImage = Drawable.createFromStream(is, "APOD");
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                mLoading.setVisibility(View.GONE);
+//                                mContent.setVisibility(View.VISIBLE);
+//                                mName.setText(apodData.getString(JSON_TITLE));
+//                                mApodImage.setImageDrawable(mImage);
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    });
+//                } catch (MalformedURLException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                // return null;
+//            }
+//        });
 //        mHandler.post(new Runnable() {
 //            //            Thread t = new Thread(new Runnable() {
 //            @Override
@@ -138,43 +193,51 @@ public class MainActivity extends Activity {
         mName.setText(name);
     }
 
+//    private class DirectExecutor implements Executor {
+//
+//        @Override
+//        public void execute(Runnable runnable) {
+//            runnable.run();
+//        }
+//    }
+//
+//    private class ThreadExecutor implements Executor {
+//
+//        @Override
+//        public void execute(Runnable runnable) {
+//            new Thread(runnable).start();
+//        }
+//    }
+
     private class DownloaderTask extends AsyncTask<String, Double, Void> {
         @Override
         protected Void doInBackground(String... strings) {
             Log.d(TAG, strings[0]);
-            try {
-                URL apod = new URL(APOD_URL);
-                HttpURLConnection urlConnection = (HttpURLConnection) apod.openConnection();
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                BufferedReader br = new BufferedReader(new InputStreamReader(in));
-                String jsonContent = br.readLine();
-                apodData = new JSONObject(jsonContent);
-                mImageUrl = apodData.getString(JSON_URL);
-                mTitle = apodData.getString(JSON_TITLE);
-                mDescription = apodData.getString(JSON_EXPLANATION);
+            ApodDAO apod = new ApodDAO();
+//            CassiniDAO cassini = new CassiniDAO();
+//            HubbleDAO hubble = new HubbleDAO();
 
-                Log.d(TAG, apodData.getString(JSON_URL));
-                Log.d(TAG, apodData.getString(JSON_TITLE));
-                InputStream is = (InputStream) new URL(mImageUrl).getContent();
+            ArrayList<ScienceImage> images = (ArrayList<ScienceImage>) apod.retrieve();
+//            images.addAll(cassini.retrieve());
+//            images.addAll(hubble.retrieve());
+
+            InputStream is = null;
+            try {
+                is = (InputStream) new URL(images.get(0).getImageUrl()).getContent();
                 mImage = Drawable.createFromStream(is, "APOD");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
+                mTitle = images.get(0).getTitle();
+                mDescription = images.get(0).getDescription();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
                             mLoading.setVisibility(View.GONE);
                             mContent.setVisibility(View.VISIBLE);
-                            mName.setText(apodData.getString(JSON_TITLE));
+                            mName.setText(mTitle);
                             mApodImage.setImageDrawable(mImage);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
-                });
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+                    });
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
                 e.printStackTrace();
             }
             return null;
