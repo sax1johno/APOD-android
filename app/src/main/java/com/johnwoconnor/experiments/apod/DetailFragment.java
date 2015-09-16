@@ -37,6 +37,8 @@ public class DetailFragment extends Fragment {
 //        fragment.setArguments(args);
 //        return fragment;
 //    }
+    // DetailFragment f = new DetailFragment("name", "details");
+    // PoiDialog dialog = new PoiDialog(POI myPoi);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
