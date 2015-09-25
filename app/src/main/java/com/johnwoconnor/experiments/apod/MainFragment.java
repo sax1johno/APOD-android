@@ -36,6 +36,7 @@ public class MainFragment extends Fragment {
     private TextView mName;
     private Button mDetailButton;
     private ImageView mApodImage;
+    private Button mShareButton;
 
     private Handler mHandler;
 
@@ -67,6 +68,8 @@ public class MainFragment extends Fragment {
         mName = (TextView)view.findViewById(R.id.name);
         mDetailButton = (Button)view.findViewById(R.id.detailButton);
         mApodImage = (ImageView)view.findViewById(R.id.apodImage);
+        mShareButton = (Button)view.findViewById(R.id.shareButton);
+
         mHandler = new Handler(Looper.getMainLooper());
         mLoading = (ProgressBar)view.findViewById(R.id.loading);
         mContent = (LinearLayout)view.findViewById(R.id.content);
@@ -81,14 +84,28 @@ public class MainFragment extends Fragment {
                 // Toast.makeText(getActivity(), "Clicked on the detail button", Toast.LENGTH_LONG).show();
                 detailFragment = new DetailFragment();
                 Bundle args = new Bundle();
-                args.putString("title", mTitle);
-                args.putString("description", mDescription);
-
+                args.putString("Title", mTitle);
+                args.putString("Description", mDescription);
                 detailFragment.setArguments(args);
-                getFragmentManager().beginTransaction()
+
+                getFragmentManager()
+                        .beginTransaction()
                         .add(R.id.content, detailFragment, "DETAIL")
                         .commit();
 
+            }
+        });
+
+        mShareButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent();
+                i.setAction(Intent.ACTION_SEND);
+                i.putExtra(Intent.EXTRA_TEXT, mDescription);
+                i.setType("text/plain");
+
+                startActivity(i);
             }
         });
 //                Intent i = new Intent(MainActivity.this, DetailActivity.class);

@@ -76,6 +76,7 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(MainActivity.this, DetailActivity.class);
                 i.putExtra("Title", mTitle);
                 i.putExtra("Explanation", mDescription);
+//                i.putExtra("Author", "John O'Connor");
                 startActivity(i);
             }
         });

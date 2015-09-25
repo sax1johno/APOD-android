@@ -17,6 +17,7 @@ public class DetailActivity extends Activity {
     TextView mDetailName;
     TextView mDetailDescription;
     Handler mHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

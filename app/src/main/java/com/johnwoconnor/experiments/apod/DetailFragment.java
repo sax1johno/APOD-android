@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 
 public class DetailFragment extends Fragment {
-    private static final String NAME = "name";
-    private static final String DETAILS = "details";
 
     private String mName;
     private String mDetails;
@@ -55,8 +53,8 @@ public class DetailFragment extends Fragment {
         mDetailDescription = (TextView) view.findViewById(R.id.detailDescription);
 
         if (getArguments() != null) {
-            mName = getArguments().getString(NAME);
-            mDetails = getArguments().getString(DETAILS);
+            mName = getArguments().getString("Title");
+            mDetails = getArguments().getString("Description");
             mDetailName.setText(mName);
             mDetailDescription.setText(mDetails);
         }
